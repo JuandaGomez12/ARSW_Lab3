@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.eci.arsw.wellness.recreation";
+option java_outer_classname = "RecreationProto";
+
+message RecEmptyRequest {}
+
+message Resource {
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    bool available = 4;
+    string borrowed_by = 5;
+}
+
+message ResourceList {
+    repeated Resource resources = 1;
+}
+
+message BorrowRequest {
+    string resource_id = 1;
+    string student_id = 2;
+}
+
+message BorrowResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+service RecreationService {
+    rpc GetResources(RecEmptyRequest) returns (ResourceList);
+    rpc BorrowResource(BorrowRequest) returns (BorrowResponse);
+    rpc ReturnResource(BorrowRequest) returns (BorrowResponse);
+}
