@@ -29,13 +29,19 @@ Open two separate terminals inside the `Ex4/` folder.
 
 Terminal 1 - Server:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.WellnessGrpcServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessGrpcServer"
 ```
 
 Terminal 2 - Client:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.WellnessGrpcClient"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessGrpcClient"
 ```
+
+## Test Data
+
+There are no pre-loaded appointments. All data is created at runtime.
+
+Student IDs are user-defined; use any value such as S001, S002, or S003. Service types are MEDICINE, PSYCHOLOGY, and DENTISTRY. Dates can be any string (e.g. 2026-06-15). Appointment IDs are assigned by the server starting from APT-1 and incrementing on each request.
 
 ## Example
 ```
@@ -70,11 +76,11 @@ No active appointments for student: S001
 
 Server:
 
-![Server execution](server.png)
+![Server execution](Server.png)
 
 Client:
 
-![Client execution](client.png)
+![Client execution](Client.png)
 
 ---
 

@@ -21,6 +21,19 @@ Terminal 2 - Client:
 java -cp Ex1/src RoomClient
 ```
 
+## Test Data
+
+The server pre-loads four salons on startup. These are the valid IDs for all three operations:
+
+| Salon ID | Initial Status |
+|----------|----------------|
+| E301     | AVAILABLE      |
+| E302     | AVAILABLE      |
+| E303     | AVAILABLE      |
+| E304     | AVAILABLE      |
+
+Any other ID (e.g. E999) returns `ERROR_SALON_NO_EXISTE`.
+
 ## Example
 ```
 === Salon Reservation Client ===
@@ -48,7 +61,6 @@ The example shows the full lifecycle of a reservation over raw TCP. Each line ty
 
 ## Notes
 - The server listens on port 35001.
-- Available salons: E301, E302, E303, E304.
 - All salon state is kept in memory; it resets when the server restarts.
 - The `processRequest` method is synchronized to prevent race conditions if the server is later extended to handle concurrent connections.
 
@@ -56,11 +68,11 @@ The example shows the full lifecycle of a reservation over raw TCP. Each line ty
 
 Server:
 
-![Server execution](server.png)
+![Server execution](Server.png)
 
 Client:
 
-![Client execution](client.png)
+![Client execution](Client.png)
 
 ---
 

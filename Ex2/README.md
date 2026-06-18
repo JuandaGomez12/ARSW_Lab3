@@ -26,24 +26,31 @@ Then open a browser or use curl to interact with the API.
 
 GET is used for read-only operations and POST for state-changing ones, following standard HTTP semantics. Status codes carry meaning: 200 for success, 404 when the salon ID does not exist, and 409 (Conflict) when an operation is logically invalid, for example trying to reserve a salon that is already reserved. This replaces the opaque `ERROR_OPERACION_INVALIDA` strings from Exercise 1.
 
+## Test Data
+
+The server pre-loads four rooms on startup. These are the valid IDs for all endpoints:
+
+| Room ID | Initial Status |
+|---------|----------------|
+| E301    | AVAILABLE      |
+| E302    | AVAILABLE      |
+| E303    | AVAILABLE      |
+| E304    | AVAILABLE      |
+
+Any other ID (e.g. E999) returns HTTP 404.
+
 ## Example
 
-List all rooms:
-```
-curl http://localhost:8080/rooms
-```
+The GET endpoints can be opened directly in a browser:
 
-Query a specific room:
-```
-curl http://localhost:8080/rooms?id=E303
-```
+- List all rooms: http://localhost:8080/rooms
+- Query a specific room: http://localhost:8080/rooms?id=E303
 
-Reserve a room:
+The POST endpoints require curl or Postman since browsers only do GET from the address bar:
+
 ```
 curl -X POST http://localhost:8080/rooms/reserve?id=E303
 ```
-
-Release a room:
 ```
 curl -X POST http://localhost:8080/rooms/release?id=E303
 ```
@@ -57,17 +64,17 @@ curl -X POST http://localhost:8080/rooms/release?id=E303
 
 ## Verification
 
-Server startup:
+GET /rooms — all rooms:
 
-![Server execution](server.png)
+![GET all rooms](AllRooms.png)
 
-GET /rooms in browser:
+GET /rooms?id=E301 — specific room:
 
-![GET all rooms](get_rooms.png)
+![Room E301](RoomE301.png)
 
-POST /rooms/reserve via curl:
+Queries:
 
-![Reserve room](reserve.png)
+![Queries](Qeurys.png)
 
 ---
 

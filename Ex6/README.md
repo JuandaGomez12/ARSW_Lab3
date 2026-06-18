@@ -49,21 +49,33 @@ Start the four microservices from Exercise 5 first, then start the gateway and c
 
 Terminals 1-4 (from Ex5 folder):
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.AppointmentServer"
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.MedicalServer"
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.GymServer"
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.RecreationServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.AppointmentServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.MedicalServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.GymServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.RecreationServer"
 ```
 
 Terminal 5 - Gateway (from Ex6 folder):
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.WellnessGatewayServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessGatewayServer"
 ```
 
 Terminal 6 - Client (from Ex6 folder):
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.GatewayClient"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.GatewayClient"
 ```
+
+## Test Data
+
+The gateway forwards requests to the same backing services as Exercise 5. All pre-loaded data is identical:
+
+- Student IDs are user-defined (e.g. S001, S002, S003).
+- Service types for appointments: MEDICINE, PSYCHOLOGY, DENTISTRY.
+- Medical specialties: MED, PSY, DEN.
+- Gym sessions: any student ID, day, and time slot (e.g. Monday 08:00-09:00).
+- Recreation resource IDs: BB01 (Basketball), TT01 (Table Tennis), BD01 (Badminton Set), BK01 (Board Game Kit).
+
+Appointment and session IDs are auto-generated (APT-1, GYM-1, ...).
 
 ## Example
 

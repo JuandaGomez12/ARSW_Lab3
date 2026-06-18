@@ -21,6 +21,19 @@ Terminal 2 - Client:
 java -cp Ex3/src RoomRmiClient
 ```
 
+## Test Data
+
+The server pre-loads four rooms on startup. These are the valid IDs for all commands:
+
+| Room ID | Initial Status |
+|---------|----------------|
+| E301    | AVAILABLE      |
+| E302    | AVAILABLE      |
+| E303    | AVAILABLE      |
+| E304    | AVAILABLE      |
+
+Any other ID (e.g. E999) returns an error from the remote method.
+
 ## Example
 ```
 === Room Reservation Client (RMI) ===
@@ -57,11 +70,11 @@ The flow is: the server starts and registers the service object in the RMI regis
 
 Server:
 
-![Server execution](server.png)
+![Server execution](Server.png)
 
 Client:
 
-![Client execution](client.png)
+![Client execution](Client.png)
 
 ---
 

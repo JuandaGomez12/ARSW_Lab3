@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.eci.arsw.wellness.medical";
+option java_outer_classname = "MedicalProto";
+
+message EmptyRequest {}
+
+message Specialty {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int32 available_slots = 4;
+}
+
+message SpecialtyList {
+    repeated Specialty specialties = 1;
+}
+
+message SpecialtyRequest {
+    string specialty_id = 1;
+}
+
+service MedicalService {
+    rpc GetSpecialties(EmptyRequest) returns (SpecialtyList);
+    rpc GetSpecialty(SpecialtyRequest) returns (Specialty);
+}

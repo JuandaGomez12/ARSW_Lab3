@@ -58,28 +58,51 @@ Open five separate terminals inside the `Ex5/` folder.
 
 Terminal 1 - AppointmentService:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.AppointmentServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.AppointmentServer"
 ```
 
 Terminal 2 - MedicalService:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.MedicalServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.MedicalServer"
 ```
 
 Terminal 3 - GymService:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.GymServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.GymServer"
 ```
 
 Terminal 4 - RecreationService:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.RecreationServer"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.RecreationServer"
 ```
 
 Terminal 5 - Client:
 ```
-mvn exec:java -Dexec.mainClass="edu.eci.arsw.wellness.WellnessClient"
+mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessClient"
 ```
+
+## Test Data
+
+**AppointmentService** has no pre-loaded appointments. Use any student ID (e.g. S001, S002, S003) and one of the service types: MEDICINE, PSYCHOLOGY, DENTISTRY. Appointment IDs are auto-generated (APT-1, APT-2, ...).
+
+**MedicalService** pre-loads three specialties:
+
+| Specialty ID | Name             | Available Slots |
+|--------------|------------------|-----------------|
+| MED          | General Medicine | 10              |
+| PSY          | Psychology       | 6               |
+| DEN          | Dentistry        | 4               |
+
+**GymService** has no pre-loaded sessions. Use any student ID and a day/time slot (e.g. Monday 08:00-09:00). Session IDs are auto-generated (GYM-1, GYM-2, ...).
+
+**RecreationService** pre-loads four resources:
+
+| Resource ID | Name            | Type    |
+|-------------|-----------------|---------|
+| BB01        | Basketball      | SPORT   |
+| TT01        | Table Tennis    | SPORT   |
+| BD01        | Badminton Set   | SPORT   |
+| BK01        | Board Game Kit  | LEISURE |
 
 ## Example
 
