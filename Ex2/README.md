@@ -1,7 +1,7 @@
 # Exercise 2 - HTTP Salon Reservation System
 
 ## Description
-An evolution of the TCP salon management system, now exposed over HTTP using Java's built-in `HttpServer`. The same four salons (E301-E304) are managed in memory, but instead of a custom text protocol over sockets, the server speaks standard HTTP, so no custom Java client is needed. A browser, curl, or Postman all work.
+The same salon management system from Exercise 1, now exposed over HTTP using Java's built-in `HttpServer`. Instead of a custom protocol, the server speaks standard HTTP, so a browser, curl, or Postman can talk to it directly without a custom client.
 
 ## How to Compile
 ```
@@ -24,11 +24,9 @@ Then open a browser or use curl to interact with the API.
 | POST   | /rooms/reserve?id=E301    | Reserve a room           |
 | POST   | /rooms/release?id=E301    | Release a room           |
 
-GET is used for read-only operations and POST for state-changing ones, following standard HTTP semantics. Status codes carry meaning: 200 for success, 404 when the salon ID does not exist, and 409 (Conflict) when an operation is logically invalid, for example trying to reserve a salon that is already reserved. This replaces the opaque `ERROR_OPERACION_INVALIDA` strings from Exercise 1.
+GET is for read-only operations and POST for state changes. Status codes carry meaning: 200 for success, 404 when the salon does not exist, and 409 (Conflict) when the operation is not valid — for example, reserving a salon that is already reserved.
 
 ## Test Data
-
-The server pre-loads four rooms on startup. These are the valid IDs for all endpoints:
 
 | Room ID | Initial Status |
 |---------|----------------|
@@ -41,12 +39,12 @@ Any other ID (e.g. E999) returns HTTP 404.
 
 ## Example
 
-The GET endpoints can be opened directly in a browser:
+GET endpoints can be opened directly in a browser:
 
 - List all rooms: http://localhost:8080/rooms
 - Query a specific room: http://localhost:8080/rooms?id=E303
 
-The POST endpoints require curl or Postman since browsers only do GET from the address bar:
+POST endpoints require curl or Postman:
 
 ```
 curl -X POST http://localhost:8080/rooms/reserve?id=E303
@@ -57,9 +55,9 @@ curl -X POST http://localhost:8080/rooms/release?id=E303
 
 ## Notes
 - The server listens on port 8080.
-- Sending a POST to `/rooms/reserve` on an already-reserved room returns HTTP 409.
-- Sending a POST to `/rooms/release` on an available room returns HTTP 409.
-- The `handle` methods in ReserveHandler and ReleaseHandler are `synchronized` to prevent race conditions under concurrent requests.
+- Reserving an already-reserved room returns HTTP 409.
+- Releasing an available room returns HTTP 409.
+- Handler methods are `synchronized` to prevent race conditions under concurrent requests.
 - All salon state is kept in memory and resets when the server restarts.
 
 ## Verification
@@ -82,12 +80,12 @@ Queries:
 
 **1. What advantages does HTTP offer over a manually defined text protocol?**
 
-HTTP provides a universally understood structure (method, path, query parameters, headers, and status codes) that any tool or language can speak without needing a custom client. A browser or curl can interact with the server directly. Status codes like 200, 404, and 409 carry semantic meaning that both humans and machines understand, replacing opaque strings like `ERROR_OPERACION_INVALIDA`. The protocol is also stateless by design, which makes scaling and debugging easier.
+HTTP provides a standard structure (method, path, query parameters, status codes) that any tool already understands. No custom client needed. Status codes like 200, 404, and 409 carry clear meaning that replaces opaque strings like `ERROR_OPERACION_INVALIDA`. HTTP is also stateless by design, which makes scaling and debugging simpler.
 
 **2. What limitations does building an HTTP server without a framework have?**
 
-Without a framework, every concern must be handled manually: routing (deciding which handler owns a given path), query parameter parsing, HTTP method validation, content-type headers, and error responses. Adding a new route means writing a new `HttpHandler` class and registering it. There is no middleware pipeline, no dependency injection, and no automatic serialization. The code becomes repetitive and harder to maintain as the number of endpoints grows. Frameworks like Spring Boot or Javalin eliminate this boilerplate while keeping the same HTTP semantics.
+Everything must be handled manually: routing, query parameter parsing, HTTP method validation, content-type headers, and error responses. Adding a new route means writing a new `HttpHandler` class and registering it by hand. There is no middleware, no dependency injection, no automatic serialization. Frameworks like Spring Boot or Javalin handle all of this automatically.
 
 **3. How would this solution change if JSON were used instead of HTML?**
 
-The response body would contain a JSON string (e.g., `{"id":"E301","status":"AVAILABLE"}`) instead of HTML markup. The `Content-Type` header would change to `application/json`. The client would no longer need to parse HTML to read the data; instead it would deserialize the JSON directly into an object. This makes the API usable by any frontend or backend system, not just a browser. A library like Jackson or Gson would handle serialization automatically, removing the manual string building currently done in `buildSalonHtml` and `buildAllRoomsHtml`.
+The response body would be a JSON string like `{"id":"E301","status":"AVAILABLE"}` instead of HTML. The `Content-Type` header would change to `application/json`. Clients could deserialize the response directly into objects instead of parsing HTML. A library like Jackson would handle serialization automatically, replacing the manual string building in `buildSalonHtml` and `buildAllRoomsHtml`.

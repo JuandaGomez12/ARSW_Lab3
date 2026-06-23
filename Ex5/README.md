@@ -1,28 +1,14 @@
 # Exercise 5 - Wellness University Microservices
 
 ## Description
-A decomposition of the wellness system into four independent gRPC microservices, each with a single clearly defined responsibility. Every service has its own `.proto` contract, its own port, and its own in-memory state. A single client opens four channels and routes commands to the appropriate service.
-
-## Microservices Diagram
-
-```
-                    WellnessClient
-                         |
-          +--------------+--------------+--------------+
-          |              |              |              |
-          v              v              v              v
- AppointmentService  MedicalService  GymService  RecreationService
-    port 50051         port 50052    port 50053    port 50054
-```
-
-The diagram shows a direct many-to-one relationship: the client opens four separate gRPC channels, one per service. Each service is fully independent with its own process, port, and in-memory state. The client must know all four addresses. This is what makes Exercise 6 necessary: the client carries too much topology knowledge here.
+The wellness system split into four independent gRPC microservices, each with a single responsibility. Every service has its own `.proto` contract, its own port, and its own in-memory state. A single client opens four channels and routes commands to the right service.
 
 ## Service Responsibilities
 
 | Service | Responsibility | Port |
 |---|---|---|
 | AppointmentService | Manages medical appointment requests and cancellations | 50051 |
-| MedicalService | Exposes available specialties and their slot availability | 50052 |
+| MedicalService | Exposes available specialties and slot availability | 50052 |
 | GymService | Handles gym session bookings per student | 50053 |
 | RecreationService | Controls borrowing and returning of recreational resources | 50054 |
 
@@ -44,17 +30,14 @@ Ex5/
     └── WellnessClient.java
 ```
 
-Each `.proto` file is an independent contract. A change to `gym.proto` does not require recompiling `appointment.proto` or any other service. In a real deployment each service would live in its own repository and Maven project; here they share one project for simplicity, but the boundary between them is already clear.
-
 ## How to Compile
-The first compile downloads dependencies, so internet access is required.
 ```
 cd Ex5
 mvn clean compile
 ```
 
 ## How to Run
-Open five separate terminals inside the `Ex5/` folder.
+Open five separate terminals inside `Ex5/`.
 
 Terminal 1 - AppointmentService:
 ```
@@ -83,7 +66,7 @@ mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessClient"
 
 ## Test Data
 
-**AppointmentService** has no pre-loaded appointments. Use any student ID (e.g. S001, S002, S003) and one of the service types: MEDICINE, PSYCHOLOGY, DENTISTRY. Appointment IDs are auto-generated (APT-1, APT-2, ...).
+**AppointmentService**: no pre-loaded data. Use any student ID (S001, S002, S003) and service type: MEDICINE, PSYCHOLOGY, DENTISTRY. IDs are auto-generated (APT-1, APT-2, ...).
 
 **MedicalService** pre-loads three specialties:
 
@@ -93,7 +76,7 @@ mvn exec:java "-Dexec.mainClass=edu.eci.arsw.wellness.WellnessClient"
 | PSY          | Psychology       | 6               |
 | DEN          | Dentistry        | 4               |
 
-**GymService** has no pre-loaded sessions. Use any student ID and a day/time slot (e.g. Monday 08:00-09:00). Session IDs are auto-generated (GYM-1, GYM-2, ...).
+**GymService**: no pre-loaded sessions. Use any student ID and a time slot (e.g. Monday 08:00-09:00). IDs are auto-generated (GYM-1, GYM-2, ...).
 
 **RecreationService** pre-loads four resources:
 
@@ -139,19 +122,13 @@ Enter command: rec list
 ```
 
 ## Notes
-- Each service manages its own state. There is no shared memory or shared database.
-- The client must know all four ports, which is the problem that the API Gateway (Exercise 6) solves.
-- `ConcurrentHashMap` and `synchronized` methods are used for thread safety under concurrent gRPC calls.
+- Each service manages its own state with no shared memory or database.
+- The client must know all four ports — this is the problem that Exercise 6 solves.
+- `ConcurrentHashMap` and `synchronized` are used for thread safety under concurrent gRPC calls.
 
 ## Verification
 
-Servers running (one per terminal):
-
-![Servers execution](servers.png)
-
-Client session:
-
-![Client execution](client.png)
+![Pruebas](src/main/java/edu/eci/arsw/wellness/Pruebas.png)
 
 ---
 
@@ -159,17 +136,17 @@ Client session:
 
 **1. Why did you choose to separate these services and not others?**
 
-Each service was separated along a natural boundary of responsibility: appointments are a transactional concern (create, cancel, query); medical specialties are reference data about available care; gym sessions are a resource-booking problem with time slots; recreational resources are a lending problem with availability state. These four domains have different data, different lifecycles, and different reasons to change, which is exactly the criterion for separating a service. Splitting further (e.g., separating `RequestAppointment` from `CancelAppointment`) would produce overly fine-grained services with no independent deployment benefit.
+Each service was separated along a natural responsibility boundary: appointments are transactional (create, cancel, query); medical specialties are reference data; gym sessions are a time-slot booking problem; recreational resources are a lending problem. These four domains have different data and change for different reasons. Splitting further (e.g., separating `RequestAppointment` from `CancelAppointment`) would create overly small services with no real benefit.
 
 **2. What data belongs to each service?**
 
-- **AppointmentService** owns: appointment records (id, studentId, serviceType, date, status).
-- **MedicalService** owns: specialty catalog (id, name, description, available slots).
-- **GymService** owns: gym session bookings (id, studentId, day, timeSlot).
-- **RecreationService** owns: physical resource inventory (id, name, type, availability, borrowedBy).
+- **AppointmentService**: appointment records (id, studentId, serviceType, date, status).
+- **MedicalService**: specialty catalog (id, name, description, available slots).
+- **GymService**: gym session bookings (id, studentId, day, timeSlot).
+- **RecreationService**: physical resource inventory (id, name, type, availability, borrowedBy).
 
-No service shares a data store with another. If `AppointmentService` needs to know whether a specialty exists, it would call `MedicalService` instead of accessing its data directly.
+No service shares a data store with another. If `AppointmentService` needs to know whether a specialty exists, it would call `MedicalService`.
 
 **3. What risk appears when the client knows all the services?**
 
-The client becomes tightly coupled to the deployment topology and must know four addresses and four ports. If any service moves to a different host or port, the client must be updated. If a new service is added, the client must be extended. The client also needs to handle partial failures: if `RecreationService` is down, it must decide whether to degrade gracefully or fail the entire session. This coupling is exactly the problem that an API Gateway solves by acting as a single entry point that hides the internal service topology from the client.
+The client becomes tightly coupled to the deployment topology. If any service moves to a different port, the client must be updated. If a new service is added, the client must be extended too. The client also must handle partial failures on its own. This is exactly the problem that an API Gateway solves.
